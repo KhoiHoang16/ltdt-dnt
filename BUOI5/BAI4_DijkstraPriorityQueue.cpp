@@ -1,10 +1,7 @@
-#include <iostream>
-#include <vector>
-#include <queue>
-#include <algorithm>
+#include <bits/stdc++.h>
 using namespace std;
 
-#define INF 1e15
+const long long INF = (1LL<<60);
 
 
 
@@ -15,24 +12,27 @@ int main() {
     int n, m, s, t;
     if (!(cin >> n >> m >> s >> t)) return 0;
 
-    vector<vector<pair<int, int>>> adj(n + 1);
-    for (int i = 0; i < m; i++) {
-        int u, v, w;
-        cin >> u >> v >> w;
+    vector<vector<pair<int,int>>> adj(n+1);
+    adj.reserve(n+1);
+
+    for (int i = 0; i < m; ++i) {
+        int u, v, w; cin >> u >> v >> w;
         adj[u].push_back({v, w});
     }
 
-    vector<long long> dist(n + 1, INF);
-    vector<int> trace(n + 1, -1);
-    dist[s] = 0;
+    vector<long long> dist(n+1, INF);
+    vector<int> trace(n+1, -1);
 
-    priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater<pair<long long, int>>> pq;
+    using P = pair<long long,int>;              // (dist, node)
+    priority_queue<P, vector<P>, greater<P>> pq;
+
+    dist[s] = 0;
     pq.push({0, s});
 
     while (!pq.empty()) {
         auto [du, u] = pq.top(); pq.pop();
-        if (du != dist[u]) continue;
-        if (u == t) break; // có thể dừng sớm
+        if (du != dist[u]) continue;            // bỏ bản sao cũ
+        if (u == t) break;                      // có thể dừng sớm
 
         for (auto [v, w] : adj[u]) {
             if (dist[v] > du + w) {
@@ -49,13 +49,12 @@ int main() {
     }
 
     vector<int> path;
-    for (int cur = t; cur != -1; cur = trace[cur])
-        path.push_back(cur);
+    for (int cur = t; cur != -1; cur = trace[cur]) path.push_back(cur);
     reverse(path.begin(), path.end());
 
     cout << path.size() << " " << dist[t] << "\n";
-    for (size_t i = 0; i < path.size(); i++) {
-        if (i) cout << " ";
+    for (size_t i = 0; i < path.size(); ++i) {
+        if (i) cout << ' ';
         cout << path[i];
     }
     cout << "\n";
